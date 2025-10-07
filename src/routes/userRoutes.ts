@@ -1,19 +1,25 @@
-const express = require("express");
-const { body, param, query, validationResult } = require("express-validator");
-const UserService = require("../services/UserService");
+import express, { NextFunction, Request, Response } from "express";
+import { body, param, query, validationResult } from "express-validator";
+import UserService from "../services/UserService";
+import { ApiResponse, AuthenticatedRequest } from "../types";
 
 const router = express.Router();
 const userService = new UserService();
 
 // Validation middleware
-const handleValidationErrors = (req, res, next) => {
+const handleValidationErrors = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       error: "Validation failed",
       details: errors.array(),
     });
+    return;
   }
   next();
 };
@@ -36,10 +42,10 @@ router.get(
       .withMessage("is_active must be a boolean"),
     handleValidationErrors,
   ],
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { limit = 100, offset = 0, is_active } = req.query;
-      const filters = {};
+      const filters: any = {};
 
       if (is_active !== undefined) {
         filters.is_active = is_active === "true";
@@ -47,14 +53,15 @@ router.get(
 
       const result = await userService.getAllUsers(
         filters,
-        parseInt(limit),
-        parseInt(offset)
+        parseInt(limit as string),
+        parseInt(offset as string)
       );
 
-      res.json({
+      const response: ApiResponse = {
         success: true,
         data: result,
-      });
+      };
+      res.json(response);
     } catch (error) {
       next(error);
     }
@@ -75,18 +82,19 @@ router.get(
       .withMessage("Offset must be a non-negative integer"),
     handleValidationErrors,
   ],
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { limit = 100, offset = 0 } = req.query;
       const result = await userService.getActiveUsers(
-        parseInt(limit),
-        parseInt(offset)
+        parseInt(limit as string),
+        parseInt(offset as string)
       );
 
-      res.json({
+      const response: ApiResponse = {
         success: true,
         data: result,
-      });
+      };
+      res.json(response);
     } catch (error) {
       next(error);
     }
@@ -94,19 +102,23 @@ router.get(
 );
 
 // GET /api/users/me - Get current user profile
-router.get("/me", async (req, res, next) => {
-  try {
-    const auth0Id = req.user.sub;
-    const user = await userService.getUserByAuth0Id(auth0Id);
+router.get(
+  "/me",
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      const auth0Id = req.user.sub;
+      const user = await userService.getUserByAuth0Id(auth0Id);
 
-    res.json({
-      success: true,
-      data: user,
-    });
-  } catch (error) {
-    next(error);
+      const response: ApiResponse = {
+        success: true,
+        data: user,
+      };
+      res.json(response);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 // GET /api/users/:id - Get user by ID
 router.get(
@@ -115,14 +127,15 @@ router.get(
     param("id").isUUID().withMessage("Invalid user ID format"),
     handleValidationErrors,
   ],
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await userService.getUserById(req.params.id);
 
-      res.json({
+      const response: ApiResponse = {
         success: true,
         data: user,
-      });
+      };
+      res.json(response);
     } catch (error) {
       next(error);
     }
@@ -147,17 +160,18 @@ router.put(
       .withMessage("Profile picture must be a valid URL"),
     handleValidationErrors,
   ],
-  async (req, res, next) => {
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const auth0Id = req.user.sub;
       const user = await userService.getUserByAuth0Id(auth0Id);
 
       const updatedUser = await userService.updateUser(user.id, req.body);
 
-      res.json({
+      const response: ApiResponse = {
         success: true,
         data: updatedUser,
-      });
+      };
+      res.json(response);
     } catch (error) {
       next(error);
     }
@@ -187,14 +201,15 @@ router.put(
       .withMessage("is_active must be a boolean"),
     handleValidationErrors,
   ],
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const updatedUser = await userService.updateUser(req.params.id, req.body);
 
-      res.json({
+      const response: ApiResponse = {
         success: true,
         data: updatedUser,
-      });
+      };
+      res.json(response);
     } catch (error) {
       next(error);
     }
@@ -208,15 +223,16 @@ router.delete(
     param("id").isUUID().withMessage("Invalid user ID format"),
     handleValidationErrors,
   ],
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const deletedUser = await userService.deleteUser(req.params.id);
 
-      res.json({
+      const response: ApiResponse = {
         success: true,
         data: deletedUser,
         message: "User deleted successfully",
-      });
+      };
+      res.json(response);
     } catch (error) {
       next(error);
     }
@@ -230,15 +246,16 @@ router.patch(
     param("id").isUUID().withMessage("Invalid user ID format"),
     handleValidationErrors,
   ],
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await userService.deactivateUser(req.params.id);
 
-      res.json({
+      const response: ApiResponse = {
         success: true,
         data: user,
         message: "User deactivated successfully",
-      });
+      };
+      res.json(response);
     } catch (error) {
       next(error);
     }
@@ -252,19 +269,20 @@ router.patch(
     param("id").isUUID().withMessage("Invalid user ID format"),
     handleValidationErrors,
   ],
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await userService.activateUser(req.params.id);
 
-      res.json({
+      const response: ApiResponse = {
         success: true,
         data: user,
         message: "User activated successfully",
-      });
+      };
+      res.json(response);
     } catch (error) {
       next(error);
     }
   }
 );
 
-module.exports = router;
+export default router;

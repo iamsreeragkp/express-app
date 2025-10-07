@@ -1,6 +1,6 @@
-const { createTables, dropTables } = require("./schema");
+import { createTables, dropTables } from "./schema";
 
-const migrate = async () => {
+const migrate = async (): Promise<void> => {
   try {
     console.log("Starting database migration...");
     await createTables();
@@ -11,7 +11,7 @@ const migrate = async () => {
   }
 };
 
-const reset = async () => {
+const reset = async (): Promise<void> => {
   try {
     console.log("Resetting database...");
     await dropTables();
@@ -34,7 +34,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = {
-  migrate,
-  reset,
-};
+export { migrate, reset };

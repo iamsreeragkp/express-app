@@ -1,5 +1,5 @@
-const jwt = require("express-jwt");
-const jwksClient = require("jwks-client");
+import jwt from "express-jwt";
+import jwksClient from "jwks-client";
 
 const client = jwksClient({
   jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
@@ -8,8 +8,8 @@ const client = jwksClient({
   cacheMaxAge: 600000, // 10 minutes
 });
 
-const getKey = (header, callback) => {
-  client.getSigningKey(header.kid, (err, key) => {
+const getKey = (header: any, callback: any): void => {
+  client.getSigningKey(header.kid, (err: Error | null, key: any) => {
     if (err) {
       return callback(err);
     }
@@ -26,4 +26,4 @@ const authMiddleware = jwt({
   requestProperty: "user",
 });
 
-module.exports = authMiddleware;
+export default authMiddleware;

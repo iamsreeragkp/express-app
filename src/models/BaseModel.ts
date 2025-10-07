@@ -1,23 +1,29 @@
-const pool = require("../database/connection");
+import pool from "../database/connection";
 
-class BaseModel {
-  constructor(tableName) {
+export default abstract class BaseModel {
+  protected tableName: string;
+
+  constructor(tableName: string) {
     this.tableName = tableName;
   }
 
-  async findById(id) {
+  async findById(id: string): Promise<any> {
     const query = `SELECT * FROM ${this.tableName} WHERE id = $1`;
     const result = await pool.query(query, [id]);
     return result.rows[0];
   }
 
-  async findAll(filters = {}, limit = 100, offset = 0) {
+  async findAll(
+    filters: Record<string, any> = {},
+    limit: number = 100,
+    offset: number = 0
+  ): Promise<any[]> {
     let query = `SELECT * FROM ${this.tableName}`;
-    const values = [];
+    const values: any[] = [];
     let paramCount = 0;
 
     // Add WHERE conditions if filters exist
-    const conditions = [];
+    const conditions: string[] = [];
     Object.keys(filters).forEach((key) => {
       if (filters[key] !== undefined && filters[key] !== null) {
         paramCount++;
@@ -43,7 +49,7 @@ class BaseModel {
     return result.rows;
   }
 
-  async create(data) {
+  async create(data: Record<string, any>): Promise<any> {
     const columns = Object.keys(data);
     const values = Object.values(data);
     const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
@@ -58,7 +64,7 @@ class BaseModel {
     return result.rows[0];
   }
 
-  async update(id, data) {
+  async update(id: string, data: Record<string, any>): Promise<any> {
     const columns = Object.keys(data);
     const values = Object.values(data);
     const setClause = columns
@@ -76,18 +82,18 @@ class BaseModel {
     return result.rows[0];
   }
 
-  async delete(id) {
+  async delete(id: string): Promise<any> {
     const query = `DELETE FROM ${this.tableName} WHERE id = $1 RETURNING *`;
     const result = await pool.query(query, [id]);
     return result.rows[0];
   }
 
-  async count(filters = {}) {
+  async count(filters: Record<string, any> = {}): Promise<number> {
     let query = `SELECT COUNT(*) FROM ${this.tableName}`;
-    const values = [];
+    const values: any[] = [];
     let paramCount = 0;
 
-    const conditions = [];
+    const conditions: string[] = [];
     Object.keys(filters).forEach((key) => {
       if (filters[key] !== undefined && filters[key] !== null) {
         paramCount++;
@@ -104,5 +110,3 @@ class BaseModel {
     return parseInt(result.rows[0].count);
   }
 }
-
-module.exports = BaseModel;

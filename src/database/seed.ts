@@ -1,11 +1,12 @@
-const pool = require("./connection");
+import { CreateUserData } from "../types";
+import pool from "./connection";
 
-const seedData = async () => {
+const seedData = async (): Promise<void> => {
   const client = await pool.connect();
 
   try {
     // Sample users data
-    const sampleUsers = [
+    const sampleUsers: CreateUserData[] = [
       {
         auth0_id: "auth0|507f1f77bcf86cd799439011",
         email: "john.doe@example.com",
@@ -73,4 +74,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { seedData };
+export { seedData };

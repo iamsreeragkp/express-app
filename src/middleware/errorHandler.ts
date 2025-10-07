@@ -1,4 +1,18 @@
-const errorHandler = (err, req, res, next) => {
+import { NextFunction, Request, Response } from "express";
+
+interface ErrorWithCode extends Error {
+  code?: string;
+  status?: number;
+  name?: string;
+  errors?: any;
+}
+
+const errorHandler = (
+  err: ErrorWithCode,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   console.error("Error:", err);
 
   // Default error
@@ -9,8 +23,8 @@ const errorHandler = (err, req, res, next) => {
 
   // Mongoose validation error
   if (err.name === "ValidationError") {
-    const message = Object.values(err.errors)
-      .map((val) => val.message)
+    const message = Object.values(err.errors || {})
+      .map((val: any) => val.message)
       .join(", ");
     error = {
       message,
@@ -62,4 +76,4 @@ const errorHandler = (err, req, res, next) => {
   });
 };
 
-module.exports = errorHandler;
+export default errorHandler;

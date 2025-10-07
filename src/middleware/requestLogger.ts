@@ -1,9 +1,16 @@
-const requestLogger = (req, res, next) => {
+import { NextFunction, Request, Response } from "express";
+import { LogData } from "../types";
+
+const requestLogger = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   const start = Date.now();
 
   res.on("finish", () => {
     const duration = Date.now() - start;
-    const logData = {
+    const logData: LogData = {
       method: req.method,
       url: req.originalUrl,
       status: res.statusCode,
@@ -19,4 +26,4 @@ const requestLogger = (req, res, next) => {
   next();
 };
 
-module.exports = requestLogger;
+export default requestLogger;

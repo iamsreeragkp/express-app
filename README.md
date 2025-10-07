@@ -1,9 +1,10 @@
 # Generic Backend Template
 
-A production-ready Express.js backend template with PostgreSQL, Auth0 authentication, and a clean service layer architecture.
+A production-ready Express.js backend template with TypeScript, PostgreSQL, Auth0 authentication, and a clean service layer architecture.
 
 ## Features
 
+- **TypeScript** - Type-safe development with full type definitions
 - **Express.js** - Fast, unopinionated web framework
 - **PostgreSQL** - Robust relational database
 - **Auth0** - Enterprise-grade authentication
@@ -13,29 +14,34 @@ A production-ready Express.js backend template with PostgreSQL, Auth0 authentica
 - **Security** - Helmet, CORS, rate limiting
 - **Logging** - Request logging middleware
 - **Database Migrations** - Easy database setup and management
+- **Type Safety** - Full TypeScript support with strict type checking
 
 ## Project Structure
 
 ```
 src/
-├── app.js                 # Main application entry point
+├── app.ts                    # Main application entry point
 ├── database/
-│   ├── connection.js      # PostgreSQL connection pool
-│   ├── schema.js          # Database schema definitions
-│   ├── migrate.js         # Database migration script
-│   └── seed.js            # Sample data seeding
+│   ├── connection.ts         # PostgreSQL connection pool
+│   ├── schema.ts             # Database schema definitions
+│   ├── migrate.ts            # Database migration script
+│   └── seed.ts               # Sample data seeding
 ├── middleware/
-│   ├── auth.js            # Auth0 JWT authentication
-│   ├── errorHandler.js    # Global error handling
-│   └── requestLogger.js    # Request logging
+│   ├── auth.ts               # Auth0 JWT authentication
+│   ├── errorHandler.ts       # Global error handling
+│   └── requestLogger.ts      # Request logging
 ├── models/
-│   ├── BaseModel.js       # Base model with CRUD operations
-│   └── User.js            # User model
+│   ├── BaseModel.ts          # Base model with CRUD operations
+│   └── User.ts               # User model
 ├── routes/
-│   └── userRoutes.js      # User API routes
-└── services/
-    ├── UserService.js     # User business logic
-    └── Auth0Service.js     # Auth0 management operations
+│   └── userRoutes.ts         # User API routes
+├── services/
+│   ├── UserService.ts        # User business logic
+│   └── Auth0Service.ts       # Auth0 management operations
+├── types/
+│   └── index.ts             # TypeScript type definitions
+└── config/
+    └── index.ts             # Configuration management
 ```
 
 ## Setup Instructions
@@ -45,6 +51,7 @@ src/
 - Node.js (v16 or higher)
 - PostgreSQL (v12 or higher)
 - Auth0 account
+- TypeScript knowledge (basic)
 
 ### 2. Installation
 
@@ -110,11 +117,17 @@ npm run seed
 ### 6. Running the Application
 
 ```bash
-# Development mode
+# Development mode (with hot reload)
 npm run dev
+
+# Build TypeScript
+npm run build
 
 # Production mode
 npm start
+
+# Type checking
+npm run type-check
 ```
 
 The server will start on `http://localhost:3000`
@@ -191,11 +204,23 @@ CREATE TABLE users (
 
 ## Scripts
 
-- `npm start` - Start the application
-- `npm run dev` - Start in development mode with nodemon
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm start` - Start the application (production)
+- `npm run dev` - Start in development mode with hot reload
 - `npm run migrate` - Run database migrations
 - `npm run seed` - Seed sample data
+- `npm run type-check` - Run TypeScript type checking
 - `npm test` - Run tests
+
+## TypeScript Features
+
+- **Strict Type Checking** - Full type safety with strict TypeScript configuration
+- **Type Definitions** - Comprehensive interfaces for all data structures
+- **Path Mapping** - Clean imports with `@/` aliases
+- **Type-Safe Database Operations** - Typed models and services
+- **API Type Safety** - Typed request/response interfaces
+- **Development Experience** - Hot reload with ts-node-dev
+- **Build Process** - Compilation to optimized JavaScript
 
 ## Security Features
 

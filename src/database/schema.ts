@@ -1,6 +1,6 @@
-const pool = require("./connection");
+import pool from "./connection";
 
-const createTables = async () => {
+export const createTables = async (): Promise<void> => {
   const client = await pool.connect();
 
   try {
@@ -38,7 +38,7 @@ const createTables = async () => {
   }
 };
 
-const dropTables = async () => {
+export const dropTables = async (): Promise<void> => {
   const client = await pool.connect();
 
   try {
@@ -50,9 +50,4 @@ const dropTables = async () => {
   } finally {
     client.release();
   }
-};
-
-module.exports = {
-  createTables,
-  dropTables,
 };
